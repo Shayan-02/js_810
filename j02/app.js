@@ -23,6 +23,6 @@ f.readFile("1.txt", "utf-8", (err, data) => {
         console.error(err);
     }
     else {
-        console.log(data);
+        console.log(data.);
     }
 });
