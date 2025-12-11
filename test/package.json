@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "express": "^5.2.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.15.3"
+  },
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "dev": "nodemon ./assets/js/script.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
