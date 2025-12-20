@@ -1,0 +1,8 @@
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:18px;z-index:9999}
+.modal{width:min(560px,96vw);background:var(--card);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.22);overflow:hidden;transform:translateY(6px);animation:pop .16s ease-out forwards}
+@keyframes pop{to{transform:translateY(0)}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:linear-gradient(180deg,#fff,#f7f7fb);border-bottom:1px solid #eee}
+.modal-title{font-weight:1000}
+.modal-close{border:0;background:#efeff5;color:#111;width:36px;height:36px;border-radius:12px;cursor:pointer;font-size:18px;font-weight:900}
+.modal-body{padding:16px}
+.modal-foot{padding:14px 16px;border-top:1px solid #eee;display:flex;gap:10px;justify-content:flex-start;flex-wrap:wrap}

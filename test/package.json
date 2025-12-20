@@ -1,18 +1,19 @@
 {
-  "dependencies": {
-    "express": "^5.2.1",
-    "mysql": "^2.18.1",
-    "mysql2": "^3.15.3"
-  },
-  "name": "test",
+  "name": "j06",
   "version": "1.0.0",
   "description": "",
-  "main": "script.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "nodemon ./assets/js/script.js"
+    "dev": "nodemon ./backend/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "body-parser": "^2.2.1",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "mysql": "^2.18.1"
+  }
 }

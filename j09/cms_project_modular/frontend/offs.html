@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="./content/css/css-reset.css">
+  <link rel="stylesheet" href="./content/css/theme.css">
+  <link rel="stylesheet" href="./content/css/aside.css">
+  <link rel="stylesheet" href="./content/css/header.css">
+  <link rel="stylesheet" href="./content/css/modal.css">
+  <link rel="stylesheet" href="./content/css/pagination.css">
+  <title>تخفیف‌ها</title>
+</head>
+<body>
+  <div class="layout">
+    <div id="asideMount"></div>
+    <main class="main">
+      <div id="headerMount"></div>
+      
+<div class="card">
+  <div class="h1">تخفیف‌ها</div>
+  <table class="table">
+    <thead><tr><th>کد</th><th>درصد</th><th>تاریخ</th><th>محصول</th><th>وضعیت</th><th>عملیات</th></tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div id="pager"></div>
+</div>
+
+<script>
+function showErr(err){openModal({ title:'خطا', bodyHTML:`<p style="margin:0;font-weight:900">${err.message}</p>`, confirmText:'باشه' });}
+function renderEmptyRow(tbodyId, colCount, message){
+  const tb = document.getElementById(tbodyId);
+  if(!tb) return;
+  tb.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:18px;font-weight:900" class="muted">${message}</td></tr>`;
+}
+let state = { page:1, limit:10, q:"" };
+const el=(id)=>document.getElementById(id);
+
+function row(o){
+  const status = o.isActive ? `<span class="badge">فعال</span>` : `<span class="badge" style="background:#ffecec;color:#b91c1c">غیرفعال</span>`;
+  return `<tr>
+    <td style="font-weight:1000">${o.code}</td>
+    <td>${o.percent}%</td>
+    <td>${o.date ?? "-"}</td>
+    <td>${o.productTitle ?? "-"}</td>
+    <td>${status}</td>
+    <td>
+      <div class="actions">
+        <button class="btn light" onclick="toggle(${o.id})">تغییر وضعیت</button>
+        <button class="btn danger" onclick="delItem(${o.id})">حذف</button>
+      </div>
+    </td>
+  </tr>`;
+}
+
+
+async function load(){
+  try{
+    const data = await apiGet(`/api/offs?q=${encodeURIComponent(state.q)}&page=${state.page}&limit=${state.limit}`);
+    if(!data.data.length) renderEmptyRow("tbody", 6, "تخفیف‌های یافت نشد");
+    else document.getElementById("tbody").innerHTML = data.data.map(row).join("");
+    renderPager({ mountId:"pager", page:data.page, totalPages:data.totalPages, limit:data.limit,
+      onChange:({page,limit})=>{ state.page=page; state.limit=limit; load(); } });
+  }catch(err){showErr(err)}
+}
+
+async function delItem(id){
+  const ok = await confirmModal({ title:"حذف تخفیف", message:"مطمئنی کد تخفیف حذف شود؟", confirmText:"حذف" });
+  if(!ok) return;
+  try{ await apiSend(`/api/offs/${id}`,"DELETE"); load(); }catch(err){showErr(err)}
+}
+async function toggle(id){
+  try{ await apiSend(`/api/offs/${id}/toggle`,"PUT"); load(); }catch(err){showErr(err)}
+}
+
+
+document.addEventListener("click",(e)=>{
+  if(e.target?.id==="btnSearch"){ state.q=el("q").value.trim(); state.page=1; load(); }
+});
+load();
+</script>
+
+    </main>
+  </div>
+
+  <script src="./content/js/components.js"></script>
+  <script src="./content/js/api.js"></script>
+  <script src="./content/js/modal.js"></script>
+  <script src="./content/js/pagination.js"></script>
+  <script>
+    (async ()=>{
+      await bootLayout("offs");
+      setHeaderSubtitle("مدیریت تخفیف‌ها");
+    })();
+  </script>
+</body>
+</html>

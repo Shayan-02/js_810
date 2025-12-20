@@ -1,0 +1,6 @@
+.aside{height:100vh;min-height:100vh;position:sticky;top:0;width:280px;background:linear-gradient(180deg,var(--primary),var(--primary2));color:#fff;padding:18px 14px}
+.brand{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.brand .title{font-weight:1000}
+.nav a{display:flex;align-items:center;justify-content:space-between;text-decoration:none;padding:12px 12px;border-radius:14px;margin:8px 0;background:rgba(255,255,255,.06)}
+.nav a:hover{background:rgba(255,255,255,.12)}
+.nav a.active{background:rgba(255,255,255,.16)}

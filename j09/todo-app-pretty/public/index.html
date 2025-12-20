@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Todo App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+
+  <body>
+    <div class="bg">
+      <div class="blob b1"></div>
+      <div class="blob b2"></div>
+      <div class="blob b3"></div>
+    </div>
+
+    <main class="container">
+      <header class="header">
+        <div class="brand">
+          <div class="logo" aria-hidden="true">✓</div>
+          <div>
+            <h1>مدیریت کارها</h1>
+          </div>
+        </div>
+
+        <div class="stats" role="status" aria-live="polite">
+          <div class="stat">
+            <div class="stat__label">همه</div>
+            <div class="stat__value" id="statAll">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">انجام‌شده</div>
+            <div class="stat__value" id="statDone">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat__label">در انتظار</div>
+            <div class="stat__value" id="statOpen">0</div>
+          </div>
+        </div>
+      </header>
+
+      <section class="card card--composer" aria-label="افزودن کار جدید">
+        <form id="form" class="composer">
+          <div class="composer__field">
+            <span class="composer__icon" aria-hidden="true">＋</span>
+            <input id="input" type="text" placeholder="کار جدید را بنویس..." autocomplete="off" />
+          </div>
+
+          <button class="btn btn--primary" type="submit">
+            افزودن
+            <span class="btn__shine" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <div class="hint">
+          نکته: با <kbd>Enter</kbd> اضافه کن • روی کار کلیک کن تا انجام‌شده شود • دوبار کلیک برای ویرایش
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="toolbar">
+          <div class="filters" role="tablist" aria-label="فیلترها">
+            <button class="chip is-active" type="button" data-filter="all" role="tab" aria-selected="true">همه</button>
+            <button class="chip" type="button" data-filter="open" role="tab" aria-selected="false">در انتظار</button>
+            <button class="chip" type="button" data-filter="done" role="tab" aria-selected="false">انجام‌شده</button>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn--ghost" type="button" id="refreshBtn" title="رفرش">
+              ↻
+            </button>
+            <button class="btn btn--ghost danger" type="button" id="clearDoneBtn" title="حذف انجام‌شده‌ها">
+              🗑
+            </button>
+          </div>
+        </div>
+
+        <ul id="list" class="list" aria-label="لیست کارها"></ul>
+
+        <div id="empty" class="empty hidden" role="status" aria-live="polite">
+          <div class="empty__icon" aria-hidden="true">🧘</div>
+          <div class="empty__title">فعلاً کاری نداری!</div>
+          <div class="empty__text">یک کار جدید اضافه کن تا شروع کنیم.</div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="./content/css/css-reset.css">
+  <link rel="stylesheet" href="./content/css/theme.css">
+  <link rel="stylesheet" href="./content/css/aside.css">
+  <link rel="stylesheet" href="./content/css/header.css">
+  <link rel="stylesheet" href="./content/css/modal.css">
+  <link rel="stylesheet" href="./content/css/pagination.css">
+  <title>کاربران</title>
+</head>
+<body>
+  <div class="layout">
+    <div id="asideMount"></div>
+    <main class="main">
+      <div id="headerMount"></div>
+      
+<div class="card" style="margin-bottom:14px">
+  <div class="h1">افزودن کاربر</div>
+  <div class="grid2">
+    <input class="input" id="firstname" placeholder="نام">
+    <input class="input" id="lastname" placeholder="نام خانوادگی">
+    <input class="input" id="username" placeholder="نام کاربری">
+    <input class="input" id="password" placeholder="رمز عبور">
+    <input class="input" id="phone" placeholder="شماره تماس (اختیاری)">
+    <input class="input" id="email" placeholder="ایمیل (اختیاری)">
+  </div>
+  <div style="margin-top:12px">
+    <button class="btn" id="addUserBtn">ثبت کاربر</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="h1">لیست کاربران</div>
+  <table class="table">
+    <thead><tr>
+      <th>نام و نام خانوادگی</th><th>نام کاربری</th><th>رمز عبور</th><th>شماره تماس</th><th>ایمیل</th><th>عملیات</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div id="pager"></div>
+</div>
+
+<script>
+function showErr(err){openModal({ title:'خطا', bodyHTML:`<p style="margin:0;font-weight:900">${err.message}</p>`, confirmText:'باشه' });}
+function renderEmptyRow(tbodyId, colCount, message){
+  const tb = document.getElementById(tbodyId);
+  if(!tb) return;
+  tb.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:18px;font-weight:900" class="muted">${message}</td></tr>`;
+}
+let state = { page:1, limit:10, q:"" };
+const el=(id)=>document.getElementById(id);
+
+function row(u){
+  return `<tr>
+    <td style="font-weight:1000">${u.firstname} ${u.lastname}</td>
+    <td><span class="badge">${u.username}</span></td>
+    <td>${u.password}</td>
+    <td>${u.phone ?? "-"}</td>
+    <td>${u.email ?? "-"}</td>
+    <td>
+      <div class="actions">
+        <button class="btn light" onclick="editUser(${u.id})">ویرایش</button>
+        <button class="btn danger" onclick="delUser(${u.id})">حذف</button>
+      </div>
+    </td>
+  </tr>`;
+}
+
+async function load(){
+  try{
+    const data = await apiGet(`/api/users?q=${encodeURIComponent(state.q)}&page=${state.page}&limit=${state.limit}`);
+    if(!data.data.length){renderEmptyRow("tbody", 6, "داده‌ای برای نمایش وجود ندارد");}
+    else {document.getElementById("tbody").innerHTML = data.data.map(row).join("");}
+    renderPager({ mountId:"pager", page:data.page, totalPages:data.totalPages, limit:data.limit,
+      onChange:({page,limit})=>{ state.page=page; state.limit=limit; load(); }});
+  }catch(err){showErr(err)}
+}
+
+async function addUser(){
+  const payload = {
+    firstname: el("firstname").value.trim(),
+    lastname: el("lastname").value.trim(),
+    username: el("username").value.trim(),
+    password: el("password").value.trim(),
+    phone: el("phone").value.trim() || null,
+    email: el("email").value.trim() || null
+  };
+  if(!payload.firstname || !payload.lastname || !payload.username || !payload.password){
+    return openModal({ title:"خطا", bodyHTML:`<p style="margin:0;font-weight:900">نام، نام خانوادگی، نام کاربری و رمز عبور الزامی است.</p>`, confirmText:"باشه" });
+  }
+  try{
+    const res = await apiSend("/api/users","POST",payload);
+    if(state.page === 1){
+      document.getElementById("tbody").insertAdjacentHTML("afterbegin", row({ id: res.id, ...payload }));
+    } else {
+      load();
+    }
+  }catch(err){ return showErr(err); }
+  ["firstname","lastname","username","password","phone","email"].forEach(id=>el(id).value="");
+  openModal({ title:"موفق", bodyHTML:`<p style="margin:0;font-weight:900">کاربر ثبت شد ✅</p>`, confirmText:"اوکی" });
+}
+
+async function delUser(id){
+  const ok = await confirmModal({ title:"حذف کاربر", message:"مطمئنی کاربر حذف شود؟", confirmText:"حذف" });
+  if(!ok) return;
+  try{
+    await apiSend(`/api/users/${id}`,"DELETE");
+    load();
+  }catch(err){showErr(err)}
+}
+
+async function editUser(id){
+  let u;
+  try{ u = await apiGet(`/api/users/${id}`); }catch(err){ return showErr(err); }
+  openModal({
+    title:"ویرایش کاربر",
+    bodyHTML:`<div class="grid2">
+      <input class="input" id="eFirstname" value="${u.firstname}">
+      <input class="input" id="eLastname" value="${u.lastname}">
+      <input class="input" id="eUsername" value="${u.username}">
+      <input class="input" id="ePassword" value="${u.password}">
+      <input class="input" id="ePhone" value="${u.phone ?? ""}" placeholder="شماره تماس (اختیاری)">
+      <input class="input" id="eEmail" value="${u.email ?? ""}" placeholder="ایمیل (اختیاری)">
+    </div>`,
+    confirmText:"ذخیره",
+    onConfirm: async ({modal})=>{
+      const payload = {
+        ...u,
+        firstname: modal.querySelector("#eFirstname").value.trim(),
+        lastname: modal.querySelector("#eLastname").value.trim(),
+        username: modal.querySelector("#eUsername").value.trim(),
+        password: modal.querySelector("#ePassword").value.trim(),
+        phone: modal.querySelector("#ePhone").value.trim() || null,
+        email: modal.querySelector("#eEmail").value.trim() || null
+      };
+      if(!payload.firstname || !payload.lastname || !payload.username || !payload.password) return false;
+      try{
+        await apiSend(`/api/users/${id}`,"PUT",payload);
+      }catch(err){ showErr(err); return false; }
+      load();
+    }
+  });
+}
+
+document.addEventListener("click",(e)=>{
+  if(e.target?.id==="addUserBtn") addUser();
+  if(e.target?.id==="btnSearch"){
+    state.q = el("q").value.trim();
+    state.page = 1;
+    load();
+  }
+});
+
+load();
+</script>
+
+    </main>
+  </div>
+
+  <script src="./content/js/components.js"></script>
+  <script src="./content/js/api.js"></script>
+  <script src="./content/js/modal.js"></script>
+  <script src="./content/js/pagination.js"></script>
+  <script>
+    (async ()=>{
+      await bootLayout("users");
+      setHeaderSubtitle("مدیریت کاربران");
+    })();
+  </script>
+</body>
+</html>

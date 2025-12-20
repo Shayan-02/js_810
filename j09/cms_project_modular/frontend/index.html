@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="./content/css/css-reset.css">
+  <link rel="stylesheet" href="./content/css/theme.css">
+  <link rel="stylesheet" href="./content/css/aside.css">
+  <link rel="stylesheet" href="./content/css/header.css">
+  <link rel="stylesheet" href="./content/css/modal.css">
+  <link rel="stylesheet" href="./content/css/pagination.css">
+  <title>داشبورد</title>
+</head>
+<body>
+  <div class="layout">
+    <div id="asideMount"></div>
+    <main class="main">
+      <div id="headerMount"></div>
+      
+<div class="card">
+  <div class="h1">داشبورد</div>
+  <p class="muted" style="margin:0;font-weight:800">از منوی سمت راست وارد بخش‌ها شوید.</p>
+</div>
+
+    </main>
+  </div>
+
+  <script src="./content/js/components.js"></script>
+  <script src="./content/js/api.js"></script>
+  <script src="./content/js/modal.js"></script>
+  <script src="./content/js/pagination.js"></script>
+  <script>
+    (async ()=>{
+      await bootLayout("index");
+      setHeaderSubtitle("پنل مدیریت");
+    })();
+  </script>
+</body>
+</html>

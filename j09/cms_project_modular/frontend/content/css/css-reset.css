@@ -1,0 +1,6 @@
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;direction:rtl;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial}
+img{max-width:100%;display:block}
+button,input{font-family:inherit}
+a{color:inherit}

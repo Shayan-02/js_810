@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="./content/css/css-reset.css">
+  <link rel="stylesheet" href="./content/css/theme.css">
+  <link rel="stylesheet" href="./content/css/aside.css">
+  <link rel="stylesheet" href="./content/css/header.css">
+  <link rel="stylesheet" href="./content/css/modal.css">
+  <link rel="stylesheet" href="./content/css/pagination.css">
+  <title>محصولات</title>
+</head>
+<body>
+  <div class="layout">
+    <div id="asideMount"></div>
+    <main class="main">
+      <div id="headerMount"></div>
+      
+<div class="card" style="margin-bottom:14px">
+  <div class="h1">افزودن محصول</div>
+  <div class="grid2">
+    <input class="input" id="title" placeholder="اسم محصول را بنویسید">
+    <input class="input" id="price" placeholder="قیمت محصول را بنویسید">
+    <input class="input" id="count" placeholder="موجودی محصول را بنویسید">
+    <input class="input" id="img" placeholder="عکس محصول را بنویسید (URL) - اختیاری">
+  </div>
+  <div style="margin-top:12px">
+    <button class="btn" id="addBtn">ثبت محصول</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="h1">لیست محصولات</div>
+  <table class="table">
+    <thead><tr>
+      <th>عکس</th><th>اسم</th><th>قیمت</th><th>موجودی</th><th>عملیات</th>
+    </tr></thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div id="pager"></div>
+</div>
+
+<script>
+function showErr(err){openModal({ title:'خطا', bodyHTML:`<p style="margin:0;font-weight:900">${err.message}</p>`, confirmText:'باشه' });}
+function renderEmptyRow(tbodyId, colCount, message){
+  const tb = document.getElementById(tbodyId);
+  if(!tb) return;
+  tb.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:18px;font-weight:900" class="muted">${message}</td></tr>`;
+}
+let state = { page:1, limit:10, q:"" };
+const el=(id)=>document.getElementById(id);
+
+function row(p){
+  const img = p.img ? `<img src="${p.img}" style="width:110px;height:55px;object-fit:cover;border-radius:14px">` : `<span class="badge">بدون عکس</span>`;
+  return `<tr>
+    <td>${img}</td>
+    <td style="font-weight:900">${p.title}</td>
+    <td>${Number(p.price).toLocaleString("fa-IR")} تومان</td>
+    <td>${p.count} عدد</td>
+    <td>
+      <div class="actions">
+        <button class="btn light" onclick="editItem(${p.id})">ویرایش</button>
+        <button class="btn danger" onclick="delItem(${p.id})">حذف</button>
+      </div>
+    </td>
+  </tr>`;
+}
+
+async function load(){
+  try{
+    const data = await apiGet(`/api/products?q=${encodeURIComponent(state.q)}&page=${state.page}&limit=${state.limit}`);
+    if(!data.data.length){renderEmptyRow("tbody", 5, "محصولی یافت نشد");}
+    else {el("tbody").innerHTML = data.data.map(row).join("");}
+    renderPager({ mountId:"pager", page:data.page, totalPages:data.totalPages, limit:data.limit,
+      onChange:({page,limit})=>{ state.page=page; state.limit=limit; load(); }});
+  }catch(err){showErr(err)}
+}
+
+async function add(){
+  const payload = {
+    title: el("title").value.trim(),
+    price: Number(el("price").value||0),
+    count: Number(el("count").value||0),
+    img: el("img").value.trim() || null
+  };
+  if(!payload.title) return openModal({ title:"خطا", bodyHTML:`<p style="margin:0;font-weight:900">اسم محصول را وارد کنید</p>`, confirmText:"باشه" });
+  try{
+    const res = await apiSend("/api/products","POST",payload);
+    if(state.page === 1){
+      el("tbody").insertAdjacentHTML("afterbegin", row({ id: res.id, ...payload }));
+    } else {
+      await load();
+    }
+  }catch(err){ return showErr(err); }
+  ["title","price","count","img"].forEach(id=>el(id).value="");
+  openModal({ title:"موفق", bodyHTML:`<p style="margin:0;font-weight:900">محصول ثبت شد ✅</p>`, confirmText:"اوکی" });
+}
+
+async function delItem(id){
+  const ok = await confirmModal({ title:"حذف محصول", message:"مطمئنی محصول حذف شود؟", confirmText:"حذف" });
+  if(!ok) return;
+  try{
+    await apiSend(`/api/products/${id}`,"DELETE");
+    load();
+  }catch(err){showErr(err)}
+}
+
+async function editItem(id){
+  let p;
+  try{ p = await apiGet(`/api/products/${id}`); }catch(err){ return showErr(err); }
+  openModal({
+    title:"ویرایش محصول",
+    bodyHTML:`<div class="grid2">
+      <input class="input" id="eTitle" value="${p.title}">
+      <input class="input" id="ePrice" value="${p.price}">
+      <input class="input" id="eCount" value="${p.count}">
+      <input class="input" id="eImg" value="${p.img ?? ""}" placeholder="عکس (URL) - اختیاری">
+    </div>`,
+    confirmText:"ذخیره",
+    onConfirm: async ({modal})=>{
+      const payload = {
+        ...p,
+        title: modal.querySelector("#eTitle").value.trim(),
+        price: Number(modal.querySelector("#ePrice").value||0),
+        count: Number(modal.querySelector("#eCount").value||0),
+        img: modal.querySelector("#eImg").value.trim() || null
+      };
+      if(!payload.title) return false;
+      try{
+        await apiSend(`/api/products/${id}`,"PUT",payload);
+      }catch(err){ showErr(err); return false; }
+      load();
+    }
+  });
+}
+
+document.addEventListener("click",(e)=>{
+  if(e.target?.id==="addBtn") add();
+  if(e.target?.id==="btnSearch"){
+    state.q = el("q").value.trim();
+    state.page = 1;
+    load();
+  }
+});
+
+load();
+</script>
+
+    </main>
+  </div>
+
+  <script src="./content/js/components.js"></script>
+  <script src="./content/js/api.js"></script>
+  <script src="./content/js/modal.js"></script>
+  <script src="./content/js/pagination.js"></script>
+  <script>
+    (async ()=>{
+      await bootLayout("products");
+      setHeaderSubtitle("مدیریت محصولات");
+    })();
+  </script>
+</body>
+</html>

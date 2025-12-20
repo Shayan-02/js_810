@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fa">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="./content/css/css-reset.css">
+        <link rel="stylesheet" href="./content/css/theme.css">
+        <link rel="stylesheet" href="./content/css/aside.css">
+        <link rel="stylesheet" href="./content/css/header.css">
+        <link rel="stylesheet" href="./content/css/modal.css">
+        <link rel="stylesheet" href="./content/css/pagination.css">
+        <title>کامنت‌ها</title>
+    </head>
+    <body>
+        <div class="layout">
+            <div id="asideMount"></div>
+            <main class="main">
+                <div id="headerMount"></div>
+                <div class="card">
+                    <div class="h1">کامنت‌ها</div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>متن</th>
+                                <th>کاربر</th>
+                                <th>محصول</th>
+                                <th>تاریخ</th>
+                                <th>ساعت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody"></tbody>
+                    </table>
+                    <div id="pager"></div>
+                </div>
+                <script>
+function showErr(err){openModal({ title:'خطا', bodyHTML:`<p style="margin:0;font-weight:900">${err.message}</p>`, confirmText:'باشه' });}
+function renderEmptyRow(tbodyId, colCount, message){
+  const tb = document.getElementById(tbodyId);
+  if(!tb) return;
+  tb.innerHTML = `<tr><td colspan="${colCount}" style="text-align:center;padding:18px;font-weight:900" class="muted">${message}</td></tr>`;
+}
+let state = { page:1, limit:10, q:"" };
+const el=(id)=>document.getElementById(id);
+
+function row(c){
+  return `<tr>
+    <td style="font-weight:900">${c.body}</td>
+    <td>${c.username ?? "-"}</td>
+    <td>${c.productTitle ?? "-"}</td>
+    <td>${c.date ?? "-"}</td>
+    <td>${c.hour ?? "-"}</td>
+    <td><div class="actions"><button class="btn danger" onclick="delItem(${c.id})">حذف</button></div></td>
+  </tr>`;
+}
+
+
+async function load(){
+  try{
+    const data = await apiGet(`/api/comments?q=${encodeURIComponent(state.q)}&page=${state.page}&limit=${state.limit}`);
+    if(!data.data.length) renderEmptyRow("tbody", 6, "کامنت‌های یافت نشد");
+    else document.getElementById("tbody").innerHTML = data.data.map(row).join("");
+    renderPager({ mountId:"pager", page:data.page, totalPages:data.totalPages, limit:data.limit,
+      onChange:({page,limit})=>{ state.page=page; state.limit=limit; load(); } });
+  }catch(err){showErr(err)}
+}
+
+async function delItem(id){
+  const ok = await confirmModal({ title:"حذف کامنت", message:"مطمئنی کامنت حذف شود؟", confirmText:"حذف" });
+  if(!ok) return;
+  try{ await apiSend(`/api/comments/${id}`,"DELETE"); load(); }catch(err){showErr(err)}
+}
+
+
+document.addEventListener("click",(e)=>{
+  if(e.target?.id==="btnSearch"){ state.q=el("q").value.trim(); state.page=1; load(); }
+});
+load();
+                </script>
+            </main>
+        </div>
+        <script src="./content/js/components.js"></script>
+        <script src="./content/js/api.js"></script>
+        <script src="./content/js/modal.js"></script>
+        <script src="./content/js/pagination.js"></script>
+        <script>
+    (async ()=>{
+      await bootLayout("comments");
+      setHeaderSubtitle("مدیریت کامنت‌ها");
+    })();
+        </script>
+    </body>
+</html>
