@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>داشبورد | BankApp</title>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">BankApp</div>
+      <nav class="menu">
+        <button class="active" data-scroll="#section-summary">داشبورد</button>
+        <button data-scroll="#section-finance">عملیات مالی</button>
+        <button data-scroll="#section-account">اطلاعات حساب</button>
+        <button id="btnLogout">خروج</button>
+      </nav>
+    </aside>
+
+    <header class="topbar">
+      <button class="btn icon-btn" id="btnToggleSidebar">☰</button>
+      <div class="topbar-title">داشبورد</div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <span class="user-badge" id="userName">—</span>
+        <button class="btn" id="btnLogoutTop">خروج</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <section id="section-summary" class="grid-cards">
+        <div class="card" id="cardBalance"></div>
+        <div class="card" id="cardCardNumber"></div>
+      </section>
+
+      <section id="section-finance" class="grid-2">
+        <div class="card">
+          <h3 style="margin:0 0 10px">واریز</h3>
+          <form id="formDeposit">
+            <label>مبلغ</label>
+            <input name="amount" inputmode="numeric" placeholder="مثلاً 100000" />
+            <div style="display:flex;justify-content:flex-end;margin-top:12px">
+              <button class="btn primary" type="submit">واریز</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 10px">برداشت</h3>
+          <form id="formWithdraw">
+            <label>مبلغ</label>
+            <input name="amount" inputmode="numeric" placeholder="مثلاً 50000" />
+            <div style="display:flex;justify-content:flex-end;margin-top:12px">
+              <button class="btn danger" type="submit">برداشت</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="section-account" class="grid-2">
+        <div class="card" id="accountInfo"></div>
+
+        <div class="card">
+          <h3 style="margin:0 0 10px">تغییر رمز عبور</h3>
+          <form id="formChangePassword">
+            <label>رمز فعلی</label>
+            <input name="currentPassword" type="password" />
+            <label>رمز جدید</label>
+            <input name="newPassword" type="password" />
+            <label>تکرار رمز جدید</label>
+            <input name="confirmNewPassword" type="password" />
+            <div style="display:flex;justify-content:flex-end;margin-top:12px">
+              <button class="btn primary" type="submit">ذخیره</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="card danger-zone">
+        <h3 style="margin:0 0 6px">ناحیه خطر</h3>
+        <p class="muted" style="margin:0 0 12px">حذف حساب غیرقابل بازگشت است.</p>
+        <button class="btn danger" id="btnDeleteAccount">حذف حساب</button>
+      </section>
+    </main>
+
+    <div id="modal-root"></div>
+  </div>
+
+  <script type="module" src="/assets/js/pages-dashboard.js"></script>
+</body>
+</html>

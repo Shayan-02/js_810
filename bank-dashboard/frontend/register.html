@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ثبت‌نام | BankApp</title>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="auth-grid">
+      <div class="card">
+        <h1 class="h1">ثبت‌نام</h1>
+        <p class="muted">اطلاعات زیر را وارد کنید.</p>
+
+        <form id="formRegister">
+          <div class="row">
+            <div class="col">
+              <label>نام</label>
+              <input name="firstName" />
+            </div>
+            <div class="col">
+              <label>نام خانوادگی</label>
+              <input name="lastName" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <label>نام کاربری</label>
+              <input name="username" autocomplete="username" />
+            </div>
+            <div class="col">
+              <label>کد ملی</label>
+              <input name="nationalId" inputmode="numeric" placeholder="۱۰ رقم" />
+            </div>
+          </div>
+
+          <label>رمز عبور</label>
+          <input name="password" type="password" autocomplete="new-password" />
+
+          <div style="display:flex; gap:10px; margin-top:14px; justify-content:flex-end">
+            <button class="btn primary" type="submit">ثبت‌نام</button>
+            <button class="btn" type="button" id="btnToLogin">ورود</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-root"></div>
+  <script type="module" src="/assets/js/pages-register.js"></script>
+</body>
+</html>

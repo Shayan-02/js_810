@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ورود | BankApp</title>
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="auth-grid">
+      <div class="card">
+        <h1 class="h1">ورود</h1>
+        <form id="formLogin">
+          <label>نام کاربری</label>
+          <input name="username" autocomplete="username" />
+          <label>رمز عبور</label>
+          <input name="password" type="password" autocomplete="current-password" />
+          <div style="display:flex; gap:10px; margin-top:14px; justify-content:flex-end">
+            <button class="btn primary" type="submit">ورود</button>
+            <button class="btn" type="button" id="btnToRegister">ثبت‌نام</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-root"></div>
+  <script type="module" src="/assets/js/pages-login.js"></script>
+</body>
+</html>
