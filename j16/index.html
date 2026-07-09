@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div style="display:flex;gap:16px">
+  <div style="flex:1">
+    <button id="load">لود کاربران</button>
+    <ul id="users"></ul>
+  </div>
+  <div style="flex:1">
+    <h3>جزئیات</h3>
+    <pre id="details"></pre>
+  </div>
+</div>
+<script>
+    let cached = []
+
+document.getElementById('load').addEventListener('click', async () => {
+  const res = await fetch('https://jsonplaceholder.typicode.com/users')
+  cached = await res.json()
+
+  const ul = document.getElementById('users')
+  ul.innerHTML = ''
+
+  cached.forEach(u => {
+    const li = document.createElement('li')
+    li.textContent = u.name
+    li.style.cursor = 'pointer'
+    li.addEventListener('click', () => {
+      document.getElementById('details').textContent = JSON.stringify(u, null, 2)
+    })
+    ul.appendChild(li)
+  })
+})
+</script>
+</body>
+</html>

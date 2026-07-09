@@ -5,4 +5,4 @@ const regDB = require("./db/registerdb");
 
 const app = express()
 app.listen(3000)
-const myPromise = new Promise()
+
